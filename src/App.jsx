@@ -1,6 +1,6 @@
 import { Route, RouterProvider,  createBrowserRouter,createRoutesFromElements } from "react-router-dom";
 import { Main, Login, Register, Navbar } from "./components";
-
+  
 
 function App() {
   const router =createBrowserRouter(

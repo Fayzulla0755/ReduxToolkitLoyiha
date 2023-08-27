@@ -1,11 +1,32 @@
 import { useState } from "react";
 import logo from "../constants/img/icon.png";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUserFailure, registerUserStart, registerUserSuccess } from "../slice/auth";
+import {AuthService} from '../service/auth'
 
 export default function Register() {
+  // Vareble's
   const [user, setUser] = useState({ username: "", email: "", password: "" });
+  const dispatch = useDispatch();
+  const {isLoading}= useSelector(state=>state.auth)
+//Function's
   const changHandler = (e) => {
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  const submitHandler= async (e)=>{
+    e.preventDefault()
+    dispatch(registerUserStart())
+  
+    try {
+      const response = await AuthService.userRefister(user)
+      console.log(response);
+      console.log(user);
+
+      dispatch(registerUserSuccess())
+    } catch (err) {
+      dispatch(registerUserFailure() )
+    }
+  }
  
   return (
     <div className="text-center">
@@ -50,8 +71,8 @@ export default function Register() {
             />
             <label htmlFor="floatingPassword">Password</label>
           </div>
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
-            Register
+          <button className="w-100 btn btn-lg btn-primary" type="submit" disabled={isLoading} onClick={submitHandler}>
+            {isLoading?"Loading...":"Register"}
           </button>
         </form>
       </main>
