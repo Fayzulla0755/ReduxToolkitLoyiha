@@ -1,12 +1,22 @@
 import React, { useState } from 'react'
 import logo from '../constants/img/icon.png'
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUserStart } from '../slice/auth';
 
 export default function Login() {
+  // Varable's
   const [user, setUser] = useState({  email: "", password: "" });
+  const dispatch = useDispatch()
+  const {isLoading} = useSelector(state=>state.auth)
+  // Function's 
   const changHandler = (e) => {
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
- 
+  const loginHandler=(e)=>{
+    e.preventDefault()
+     dispatch(loginUserStart())
+     console.log(isLoading);
+  }
   return (
     <div className="text-center">
       <main className="form-signin m-auto w-25">
@@ -40,8 +50,8 @@ export default function Login() {
             />
             <label htmlFor="floatingPassword">Password</label>
           </div>
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
-            Login
+          <button className="w-100 btn btn-lg btn-primary" type="submit" disabled={isLoading} onClick={loginHandler} >
+            {isLoading?"Loading..":'Login'}
           </button>
         </form>
       </main>
