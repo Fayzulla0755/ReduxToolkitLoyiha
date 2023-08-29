@@ -1,16 +1,25 @@
-import axios from "./api"
-
+import axios from "axios"
+import { getItem } from "../helpers/persistance-storage"
+axios.defaults.baseURL = "https://api.realworld.io/api"
+axios.interceptors.request.use(config=>{
+    const token = getItem('token')
+    const authoration = token ? `Token ${token}`:''
+    config.headers.Authorization= authoration
+    return config
+})
 export const AuthService={
     async userRefister(user){
-        const response= await axios.post('/users',{user})
-        return response
+        const {data}= await axios.post('/users',{user})
+        return data
     },
-    async userLogin(){
-        // const response= await axios.post('/users/login')
+    async userLogin(user){
+        const {data}= await axios.post('/users/login',{user})
+        return data
 
     },
     async getUser(){
-        // const response= await axios.post('/user')
+        const {data}= await axios.get('/user')
+return data
 
     }
 }

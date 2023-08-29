@@ -1,22 +1,40 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import logo from '../constants/img/icon.png'
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUserStart } from '../slice/auth';
+import { signUserFailure, signUserStart, signUserSuccess } from '../slice/auth';
+import { AuthService } from '../service/auth';
+import ValidationError from './ValidationError';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   // Varable's
   const [user, setUser] = useState({  email: "", password: "" });
   const dispatch = useDispatch()
-  const {isLoading} = useSelector(state=>state.auth)
+  const {isLoading,loggetIn} = useSelector(state=>state.auth)
+  const navigate = useNavigate()
+
   // Function's 
   const changHandler = (e) => {
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const loginHandler=(e)=>{
+ 
+  const loginHandler= async(e)=>{
     e.preventDefault()
-     dispatch(loginUserStart())
-     console.log(isLoading);
+     dispatch(signUserStart())
+     try {
+      const response =await AuthService.userLogin(user)
+     dispatch(signUserSuccess(response.user))
+     navigate('/')
+      
+     } catch (err) {
+     dispatch(signUserFailure(err.response.data.errors))
+      
+     }
+   
   }
+  useEffect(()=>{
+    if(loggetIn){navigate('/')}
+  },[loggetIn])
   return (
     <div className="text-center">
       <main className="form-signin m-auto w-25">
@@ -24,7 +42,7 @@ export default function Login() {
           <img className="mb-4" src={logo} alt="" width="72" />
           <h1 className="h3 mb-3 fw-normal">Please login </h1>
 
-          
+          <ValidationError/>
           <div className="form-floating mb-1">
             
             <input
@@ -36,7 +54,7 @@ export default function Login() {
               id="floatingInput2"
               placeholder="nam"
             />
-            <label htmlFor="floatingInput">User name</label>
+            <label htmlFor="floatingInput">User email</label>
           </div>
           <div className="form-floating mb-2">
             <input

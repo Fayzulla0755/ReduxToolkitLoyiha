@@ -1,32 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../constants/img/icon.png";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUserFailure, registerUserStart, registerUserSuccess } from "../slice/auth";
+import { signUserFailure, signUserStart, signUserSuccess } from "../slice/auth";
 import {AuthService} from '../service/auth'
+import ValidationError from "./ValidationError";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   // Vareble's
   const [user, setUser] = useState({ username: "", email: "", password: "" });
   const dispatch = useDispatch();
-  const {isLoading}= useSelector(state=>state.auth)
+  const {isLoading,loggetIn}= useSelector(state=>state.auth)
+  const navigate = useNavigate()
 //Function's
   const changHandler = (e) => {
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const submitHandler= async (e)=>{
+  const registerHandler= async (e)=>{
     e.preventDefault()
-    dispatch(registerUserStart())
+    dispatch(signUserStart())
   
     try {
       const response = await AuthService.userRefister(user)
-      console.log(response);
-      console.log(user);
 
-      dispatch(registerUserSuccess())
+      dispatch(signUserSuccess(response.user))
+      navigate('/')
     } catch (err) {
-      dispatch(registerUserFailure() )
+
+      dispatch(signUserFailure(err.response.data.errors) )
+     
     }
   }
+  useEffect(()=>{
+    if(loggetIn){navigate('/')}  
+    
+  },[loggetIn])
  
   return (
     <div className="text-center">
@@ -34,7 +42,7 @@ export default function Register() {
         <form className="mt-5">
           <img className="mb-4" src={logo} alt="" width="72" />
           <h1 className="h3 mb-3 fw-normal">Please register</h1>
-
+<ValidationError/>
           <div className="form-floating mb-1">
             <input
               name="username"
@@ -71,7 +79,7 @@ export default function Register() {
             />
             <label htmlFor="floatingPassword">Password</label>
           </div>
-          <button className="w-100 btn btn-lg btn-primary" type="submit" disabled={isLoading} onClick={submitHandler}>
+          <button className="w-100 btn btn-lg btn-primary" type="submit" disabled={isLoading} onClick={registerHandler}>
             {isLoading?"Loading...":"Register"}
           </button>
         </form>
