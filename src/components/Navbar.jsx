@@ -1,9 +1,18 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import logo from "../constants/img/icon.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeItem } from "../helpers/persistance-storage";
+import { logoutUser } from "../slice/auth";
 
 export default function () {
   const { loggetIn, user } = useSelector((state) => state.auth);
+  const navigate = useNavigate()
+  const dispatch= useDispatch()
+  const logoutHandler =()=>{
+    removeItem('token')
+dispatch(logoutUser())
+    navigate('/login')
+  }
 
   return (
     <>
@@ -50,7 +59,7 @@ export default function () {
               {loggetIn ? (
                 <>
                   <p className="text-bold p-2 m-2">{user.username}</p>
-                  <button className="btn btn-outline-danger btn- ">Logout</button>
+                  <button onClick={logoutHandler} className="btn btn-outline-danger btn- ">Logout</button>
                 </>
               ) : (
                 <>

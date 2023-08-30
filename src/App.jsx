@@ -4,12 +4,14 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
-import { Main, Login, Register, Navbar } from "./components";
-import { useDispatch } from "react-redux";
+import { Main, Login, Register, Navbar, ArticleDetail } from "./components";
+import { useDispatch, useSelector } from "react-redux";
 import { signUserStart, signUserSuccess } from "./slice/auth";
 import { AuthService } from "./service/auth";
 import { useEffect } from "react";
 import { getItem } from "./helpers/persistance-storage";
+import ArticleServise from "./service/article";
+import { getArticlesStart, getArticlesSuccess } from "./slice/article";
 
 function App() {
   const dispatch = useDispatch();
@@ -23,19 +25,31 @@ function App() {
       console.log(error);
     }
   };
+
+  const getArticles = async ()=>{
+    dispatch(getArticlesStart())
+    try {
+      const response = await ArticleServise.getArticles()
+      dispatch(getArticlesSuccess(response.articles))
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(()=>{
     const token = getItem('token')
     if(token){
       getUser()
 
     }
+    getArticles()
   },[])
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Navbar />}>
         <Route index element={<Main />} />
         <Route path="login" element={<Login />} />
-        <Route path="Register" element={<Register />} />
+        <Route path="register" element={<Register />} />
+        <Route path="article/:id" element={<ArticleDetail/>}/>
       </Route>
     )
   );
