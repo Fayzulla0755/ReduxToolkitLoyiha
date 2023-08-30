@@ -6,13 +6,13 @@ import { logoutUser } from "../slice/auth";
 
 export default function () {
   const { loggetIn, user } = useSelector((state) => state.auth);
-  const navigate = useNavigate()
-  const dispatch= useDispatch()
-  const logoutHandler =()=>{
-    removeItem('token')
-dispatch(logoutUser())
-    navigate('/login')
-  }
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const logoutHandler = () => {
+    removeItem("token");
+    dispatch(logoutUser());
+    navigate("/login");
+  };
 
   return (
     <>
@@ -58,8 +58,21 @@ dispatch(logoutUser())
             <div className="text-end d-inline-flex ">
               {loggetIn ? (
                 <>
+                  <Link to={"/create-article"}>
+                    <button
+                      type="button"
+                      className="btn btn-outline-success my-2"
+                    >
+                      Create
+                    </button>{" "}
+                  </Link>
                   <p className="text-bold p-2 m-2">{user.username}</p>
-                  <button onClick={logoutHandler} className="btn btn-outline-danger btn- ">Logout</button>
+                  <button
+                    onClick={logoutHandler}
+                    className="btn btn-outline-danger btn- "
+                  >
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>
