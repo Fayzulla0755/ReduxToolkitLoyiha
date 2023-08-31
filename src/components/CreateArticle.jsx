@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 
-import { Input } from "../ui";
+import ArticleForm from "./ArticleForm";
+import ArticleServise from "../service/article";
+import { useDispatch } from "react-redux";
+import { postArticleFailur, postArticleSiuccess, postArticleStart } from "../slice/article";
+import { useNavigate } from "react-router-dom";
 export default function CreateArticle() {
+  // Constant's
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [article, setArticle] = useState({
     title: "",
     body: "",
@@ -10,45 +17,28 @@ export default function CreateArticle() {
   const changHandler = (e) => {
     setArticle((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  const formSubmit = async (e)=>{
+    e.preventDefault()
+    dispatch(postArticleStart())
+    try {
+      await ArticleServise.postArticle(article)
+      dispatch(postArticleSiuccess())
+      setArticle({
+        title: "",
+        body: "",
+        description: "",
+      })
+      navigate('/')
+     
+    } catch (err) {
+      dispatch(postArticleFailur())
+      console.log(err);
+    }
+  }
   return (
     <div className="container text-center ">
       <h1 className="fs-2">Create article</h1>
-      <form>
-        <div className="w-75 mx-auto ">
-          <input
-            type="text"
-            className="form-control my-1 "
-            name="title"
-            id="floatingInput"
-            placeholder="Title"
-            value={article.title}
-            onChange={changHandler}
-          />
-          
-          <textarea
-          rows={5}
-
-            value={article.description}
-            onChange={changHandler}
-            className="form-control  my-1 "
-            name="description"
-            placeholder="Description"
-            id="floatingTextarea"
-          ></textarea>
-          <textarea 
-          rows={15}
-            value={article.body}
-            onChange={changHandler}
-            className="form-control  my-1 "
-            name="body"
-            placeholder="Leave a comment here"
-            id="floatingTextarea"
-          ></textarea>
-          <button className="w-100 btn btn-lg btn-primary my-1" type="submit"  >
-            Create
-          </button>
-        </div>
-      </form>
+      <ArticleForm changHandler={changHandler} article={article}  formSubmit={formSubmit}/>
     </div>
   );
 }

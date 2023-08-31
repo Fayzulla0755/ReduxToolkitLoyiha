@@ -21,7 +21,7 @@ export default function ArticleDetail() {
       dispatch(getArticleDetailSuccess(response.article));
     } catch (error) {
       console.log(error);
-      dispatch(getArticleDetailFailure);
+      dispatch(getArticleDetailFailure());
     }
   };
   useEffect(() => {
@@ -45,7 +45,8 @@ export default function ArticleDetail() {
         </div>
         <div className="W-100 d-flex justify-content-end align-items-center  ">
           {articleDetail.author.username}
-          <img
+          <img 
+          width={'50px'}
             style={{ borderRadius: "50%" }}
             src={articleDetail.author.image}
             alt={articleDetail.author.username}

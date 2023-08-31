@@ -11,15 +11,13 @@ import {
   Navbar,
   ArticleDetail,
   CreateArticle,
+  EditArticle,
 } from "./components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signUserStart, signUserSuccess } from "./slice/auth";
 import { AuthService } from "./service/auth";
 import { useEffect } from "react";
 import { getItem } from "./helpers/persistance-storage";
-import ArticleServise from "./service/article";
-import { getArticlesStart, getArticlesSuccess } from "./slice/article";
-
 function App() {
   const dispatch = useDispatch();
   const getUser = async () => {
@@ -32,23 +30,15 @@ function App() {
       console.log(error);
     }
   };
-
-  const getArticles = async () => {
-    dispatch(getArticlesStart());
-    try {
-      const response = await ArticleServise.getArticles();
-      dispatch(getArticlesSuccess(response.articles));
-    } catch (error) {
-      console.log(error);
-    }
-  };
   useEffect(() => {
     const token = getItem("token");
     if (token) {
       getUser();
     }
-    getArticles();
+   
   }, []);
+
+ 
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Navbar />}>
@@ -57,6 +47,7 @@ function App() {
         <Route path="register" element={<Register />} />
         <Route path="article/:id" element={<ArticleDetail />} />
         <Route path="create-article" element={<CreateArticle />} />
+        <Route path="edit-article/:slug" element={<EditArticle/>}/>
       </Route>
     )
   );
